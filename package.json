@@ -1,0 +1,24 @@
+{
+  "name": "chrome-ext-modulize",
+  "version": "0.0.1",
+  "homepage": "https://github.com/krasimir/modulize",
+  "description": "Chrome extension that tests the modularity of your CSS",
+  "author": {
+    "name": "Krasimir Tsonev",
+    "email": "info@krasimirtsonev.com",
+    "url": "http://krasimirtsonev.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    
+  },
+  "devDependencies": {
+    "gulp": "3.5.2",
+    "gulp-concat": "2.1.7"
+  },
+  "keywords": [
+    "modulize",
+    "chrome",
+    "extension"
+  ]
+}

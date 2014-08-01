@@ -3,7 +3,7 @@ var concat = require('gulp-concat');
 
 gulp.task('js', function() {
 	gulp.src('chrome/js/src/**/*.js')
-	.pipe(concat('modulize.js'))
+	.pipe(concat('cssmell.js'))
 	.pipe(gulp.dest('chrome/js'))
 });
 

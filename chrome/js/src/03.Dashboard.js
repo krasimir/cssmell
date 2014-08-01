@@ -1,5 +1,5 @@
 var Dashboard = absurd.component('Dashboard', {
-	html: {}, data: null,
+	html: {}, data: null, treeHTML: '',
 	css: DashboardCSS(CSSSettings),
 	init: function(stats, $content) {
 		// console.log(JSON.stringify(stats));
@@ -16,31 +16,35 @@ var Dashboard = absurd.component('Dashboard', {
 		};
 
 		// ***************************************** looping through the styles
-		var prop;
+		var prop, self = this; this.treeHTML = '';
 		(function process(els) {
+			self.treeHTML += '<ul>';
 			for(var i=0; i<els.length; i++) {
 
 				// parsing the elements
 				var el = els[i];
 				if(el.name !== 'script') {
-					if(el.css && el.css.length > 0) {
-						for(var j=el.css.length-1; j>=0; j--) {
-							for(var propName in el.css[j].properties) {
-								prop = el.css[j].properties[propName];
-								if(prop.status === 'active') {
-									console.log(prop.value);
-								}
-							}
-						}
+					self.treeHTML += '<li>';
+					self.treeHTML += '<a href="#">' + el.name + '</a>';
+					// if(el.css && el.css.length > 0) {
+					// 	for(var j=el.css.length-1; j>=0; j--) {
+					// 		for(var propName in el.css[j].properties) {
+					// 			prop = el.css[j].properties[propName];
+					// 			if(prop.status === 'active') {
+					// 				console.log(prop.value);
+					// 			}
+					// 		}
+					// 	}
+					// }
+
+					// processing the childs
+					if(el.childs.length > 0) {
+						process(el.childs);
 					}
+					self.treeHTML += '</li>';
 				}
-
-				// processing the childs
-				if(el.childs.length > 0) {
-					process(el.childs);
-				}
-
 			}
+			self.treeHTML += '</ul>';
 		})(stats.storage);
 
 		// ***************************************** collecting colors
@@ -62,8 +66,9 @@ var Dashboard = absurd.component('Dashboard', {
 	showTree: function(e) {
 		e && e.preventDefault();
 		this.html = {
-			'.dashboard-list': [
-				this.tplInfoLine
+			'.dashboard': [
+				this.tplInfoLine,
+				{ '.tree': this.treeHTML }
 			]
 		};
 		this.populate();

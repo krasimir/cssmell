@@ -1,8 +1,8 @@
 {
-  "name": "chrome-ext-modulize",
+  "name": "chrome-ext-cssmell",
   "version": "0.0.1",
-  "homepage": "https://github.com/krasimir/modulize",
-  "description": "Chrome extension that tests the modularity of your CSS",
+  "homepage": "https://github.com/krasimir/cssmell",
+  "description": "An instrument that helps you find the code smells in your CSS",
   "author": {
     "name": "Krasimir Tsonev",
     "email": "info@krasimirtsonev.com",
@@ -17,7 +17,8 @@
     "gulp-concat": "2.1.7"
   },
   "keywords": [
-    "modulize",
+    "css",
+    "smell",
     "chrome",
     "extension"
   ]

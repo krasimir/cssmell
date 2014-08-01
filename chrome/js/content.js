@@ -60,7 +60,7 @@ var processes = {
 			storage: []
 		};
 		var gap = 1;
-		var parse = function(e, storage, path, cb) {
+		var parse = function(e, storage, cb) {
 
 			// skipping text nodes and script tags
 			if(e.nodeType !== 1 || e.nodeType == 'SCRIPT') { cb(); return; }
@@ -78,10 +78,9 @@ var processes = {
 			numOfProcessed = 0,
 			processed,
 			item = {
-				name: (e.nodeName + (cls != null ? '.' + cls : '')).toLowerCase(),
+				name: (e.nodeName.toLowerCase() + (cls != null ? '.' + cls.trim().replace(/  /g, ' ').replace(/ /g, '.') : '')),
 				childs: elStorage
 			};
-			item.path = path.trim();
 			storage.push(item);
 
 			// marking the node
@@ -107,7 +106,7 @@ var processes = {
 					numOfProcessed++;
 					if(e.childNodes[numOfProcessed]) {
 						setTimeout(function(){
-							parse(e.childNodes[numOfProcessed], elStorage, item.path + ' ' + item.name, processed);
+							parse(e.childNodes[numOfProcessed], elStorage, processed);
 						}, gap);
 					} else {
 						// CSSUtilities.getCSSRules(e, '*', 'selector,properties,media,specificity,href,index', true, function(rules) {
@@ -120,7 +119,7 @@ var processes = {
 					}
 				}
 	            setTimeout(function(){
-					parse(e.childNodes[numOfProcessed], elStorage, item.path + ' ' + item.name, processed);
+					parse(e.childNodes[numOfProcessed], elStorage, processed);
 				}, gap);
         	} else {
         		cb();
@@ -128,7 +127,7 @@ var processes = {
 
 		};
 		isLoaded(function() {
-			parse(document.querySelector('body'), stats.storage, '', function() {
+			parse(document.querySelector('body'), stats.storage, function() {
 				self.port.postMessage({type: 'parsedom', status: 'done', stats: stats});
 			});
 		});		

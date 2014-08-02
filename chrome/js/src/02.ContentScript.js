@@ -14,11 +14,10 @@ var ContentScript = absurd.component('ContentScript', {
 			this.port.postMessage(data);			
 		} else {
 			switch(data.type) {
-				case 'parsedom':
+				case 'getstyles':
 					self.dispatch('on-port-message-received', {
-						type: "parsedom", 
-						status: "done", 
-						stats: Mockup.parsedPage
+						type: "getstyles",
+						stats: Mockup.rules
 					});
 				break;
 			}

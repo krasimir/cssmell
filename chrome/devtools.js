@@ -1,8 +1,6 @@
-chrome.devtools.panels.create(
-	"M6E", 
-	"img/icon16.png", 
-	"index.html",
-	function() {
-		
+chrome.devtools.panels.elements.createSidebarPane(
+	"CSSMELL",
+	function(sidebar) {
+		sidebar.setPage("cssmell.html");
 	}
 );

@@ -10,7 +10,7 @@ absurd.component('App', {
 				var result = [], sources = [$0, $1, $2, $3, $4];
 				sources.forEach(function(s) {
 					if(typeof s !== 'undefined') { 
-						result.push(CSSUtilities.getCSSRules(s, '*', 'selector,properties,media,specificity,href,index', true));
+						result.push(CSSUtilities.getCSSRules(s, '*', 'selector,properties,media,specificity,href,index', false));
 					}	
 				});
 				return result;

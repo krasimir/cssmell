@@ -20,23 +20,117 @@ var CSSSettings = {
 }
 var Mockup = JSON.parse('[[{"selector":"body","index":0,"specificity":[0,0,0,0],"media":"all","href":"http://localhost/_tests/JS&CSS/cssmell/external.css","properties":{"color":{"value":"rgb(69, 210, 53)","status":"active"}}},{"selector":".text","index":8,"specificity":[0,0,1,0],"media":"all","href":null,"properties":{"margin":{"value":"100px 0px","status":"active"},"font-size":{"value":"26px","status":"active"}}}],[{"selector":"body","index":0,"specificity":[0,0,0,0],"media":"all","href":"http://localhost/_tests/JS&CSS/cssmell/external.css","properties":{"color":{"value":"rgb(69, 210, 53)","status":"active"}}},{"selector":".content","index":4,"specificity":[0,0,1,0],"media":"all","href":null,"properties":{"width":{"value":"400px","status":"active"},"padding":{"value":"40px","status":"active"},"box-sizing":{"value":"border-box","status":"active"},"background":{"value":"rgb(189, 189, 189)","status":"active"}}}],[{"selector":"body","index":0,"specificity":[0,0,0,1],"media":"all","href":"http://localhost/_tests/JS&CSS/cssmell/external.css","properties":{"width":{"value":"100%","status":"active"},"color":{"value":"rgb(69, 210, 53)","status":"active"},"padding":{"value":"100px","status":"active"},"margin":{"value":"0px","status":"active"},"box-sizing":{"value":"border-box","status":"active"},"background":{"value":"url(http://localhost/_tests/JS&CSS/cssmell/bg.JPG)","status":"active"}}}],[{"selector":"body","index":0,"specificity":[0,0,0,0],"media":"all","href":"http://localhost/_tests/JS&CSS/cssmell/external.css","properties":{"color":{"value":"rgb(69, 210, 53)","status":"active"}}},{"selector":".content","index":4,"specificity":[0,0,1,0],"media":"all","href":null,"properties":{"width":{"value":"400px","status":"active"},"padding":{"value":"40px","status":"active"},"box-sizing":{"value":"border-box","status":"active"},"background":{"value":"rgb(189, 189, 189)","status":"active"}}}],[{"selector":"body","index":0,"specificity":[0,0,0,0],"media":"all","href":"http://localhost/_tests/JS&CSS/cssmell/external.css","properties":{"color":{"value":"rgb(69, 210, 53)","status":"active"}}},{"selector":".text","index":8,"specificity":[0,0,1,0],"media":"all","href":null,"properties":{"margin":{"value":"100px 0px","status":"active"},"font-size":{"value":"26px","status":"active"}}}]]');
 var Item = absurd.component('Item', {
+	styles: [],
+	allStyles: {},
+	css: {
+		'.item': {
+			wid: '100%',
+			mar: '0 0 2em 0'
+		},
+		'.item-selector': {
+			bdt: '2px solid #8BD349',
+			bg: '#CDECB0',
+			pad: '0.2em 0.4em'
+		},
+		'.item-styles': {
+
+		},
+		'.prop': {
+			pad: '0 0 0 0.5em'
+		},
+		'.prop-name': {
+			color: '#F00'
+		},
+		'.prop-name-inherited': {
+			pad: '0 0 0 1.6em'
+		},
+		'.prop-value-nonactive': {
+			ted: 'line-through'
+		},
+		'.parent': {
+			pad: '0 0 0 0.5em'
+		}
+	},
 	html: {
 		'.item': {
-			p: 'abc'
+			'.item-selector': '<% getSelector() %>',
+			'.item-styles': [
+				'<% for(var prop in allStyles) { %>',
+					{ '.prop': '<span class="prop-name"><% prop %>: </span> <span class="prop-value"><% allStyles[prop] %>;</span>' },
+				'<% } %>',
+				'<% for(var i=styles.length-2; i>=0; i--) { %>',
+					'<% if(i < styles.length-1) { %>',
+						{ '.parent': '<i class="fa fa-arrow-circle-right"></i>&nbsp;<% styles[i].selector %>' },
+					'<% } %>',
+					'<% for(var prop in styles[i].properties) { %>',
+						'<% if(styles[i].properties[prop].status !== "active") { %>',
+						{ '.prop-name-inherited.prop-value-nonactive': '<span class="prop-name"><% prop %>: </span> <span class="prop-value"><% styles[i].properties[prop].value %>;</span>' },
+						'<% } else { %>',
+						{ '.prop-name-inherited': '<span class="prop-name"><% prop %>: </span> <span class="prop-value"><% styles[i].properties[prop].value %>;</span>' },
+						'<% } %>',
+					'<% } %>',
+				'<% } %>'
+			]
 		}
+	},
+	getSelector: function() {
+		if(this.styles.length > 0) {
+			return this.styles[this.styles.length-1].selector;
+		} else {
+			return '';
+		}
+		return this;
+	},
+	fetchAllStyles: function() {
+		this.allStyles = {};
+		for(var i=0; i<this.styles.length; i++) {
+			for(var prop in this.styles[i].properties) {
+				if(this.styles[i].properties[prop].status === 'active') {
+					this.allStyles[prop] = this.styles[i].properties[prop].value;
+				}
+			}
+		}
+		console.log(this.allStyles);
+		return this;
+	},
+	show: function(styles) {
+		console.log(styles);
+		this.styles = styles;
+		this.fetchAllStyles().populate();
+		this.el.style.display = 'block';
+		return this;
+	},
+	hide: function() {
+		this.el.style.display = 'none';
+		return this;
 	}
 });
 var Dashboard = absurd.component('Dashboard', {
 	css: DashboardCSS(CSSSettings),
 	html: '#dashboard',
-	addItems: function() {
+	items: [],
+	addItems: function(cb) {
+		var self = this;
 		this.populate();
-		for(var i=0; i<)
+		for(var i=0; i<5; i++) {
+			var item = Item().populate().hide();
+			self.items.push(item);
+			(function(m) {
+				setTimeout(function() {
+					self.el.appendChild(m.el);
+				}, 0);
+			})(item);
+		}
 		return this;
 	},
-	init: function(styles) {		
-		console.log(styles);
-		this.el.innerHTML = '';
+	init: function(styles) {
+		for(var i=0; i<5; i++) {
+			if(styles[i] && styles[i].length > 0) {
+				this.items[i].show(styles[i]);
+			} else {
+				this.items[i].hide();
+			}
+		}
 	}
 });
 absurd.di.register('$dashboard', Dashboard());
@@ -58,7 +152,7 @@ absurd.component('App', {
 				var result = [], sources = [$0, $1, $2, $3, $4];
 				sources.forEach(function(s) {
 					if(typeof s !== 'undefined') { 
-						result.push(CSSUtilities.getCSSRules(s, '*', 'selector,properties,media,specificity,href,index', true));
+						result.push(CSSUtilities.getCSSRules(s, '*', 'selector,properties,media,specificity,href,index', false));
 					}	
 				});
 				return result;

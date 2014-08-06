@@ -1,5 +1,10 @@
 var Dashboard = absurd.component('Dashboard', {
-	css: DashboardCSS(CSSSettings),
+	css: {
+		'#dashboard': {
+			wid: '70%',
+			bdr: '1px solid #8BD349'
+		}	
+	},
 	html: '#dashboard',
 	items: [],
 	addItems: function(cb) {
@@ -26,10 +31,3 @@ var Dashboard = absurd.component('Dashboard', {
 		}
 	}
 });
-absurd.di.register('$dashboard', Dashboard());
-
-function DashboardCSS(s) {
-	return {
-
-	}
-}

@@ -3,8 +3,7 @@ var Item = absurd.component('Item', {
 	allStyles: {},
 	css: {
 		'.item': {
-			wid: '100%',
-			mar: '0 0 2em 0'
+			wid: '100%'
 		},
 		'.item-selector': {
 			bdt: '2px solid #8BD349',
@@ -69,7 +68,6 @@ var Item = absurd.component('Item', {
 				}
 			}
 		}
-		console.log(this.allStyles);
 		return this;
 	},
 	show: function(styles) {

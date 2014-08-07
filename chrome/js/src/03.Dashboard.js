@@ -22,12 +22,21 @@ var Dashboard = absurd.component('Dashboard', {
 		return this;
 	},
 	init: function(styles) {
+		console.log(styles);
+		// this.qs('#debug', document).innerHTML = JSON.stringify(styles);
 		for(var i=0; i<5; i++) {
 			if(styles[i] && styles[i].length > 0) {
-				this.items[i].show(styles[i]);
-			} else {
-				this.items[i].hide();
+				this.items[i].setStyles(styles[i]);
 			}
+		}
+	},
+	showByIndex: function(index) {
+		if(!this.items) return;
+		for(var i=0; i<this.items.length; i++) {
+			this.items[i].hide();
+		}
+		if(this.items[index]) {
+			this.items[index].show();
 		}
 	}
 });

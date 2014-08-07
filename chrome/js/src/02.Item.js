@@ -1,9 +1,10 @@
 var Item = absurd.component('Item', {
-	styles: [],
-	allStyles: {},
+	rawStyles: [],
+	styles: {},
 	css: {
 		'.item': {
-			wid: '100%'
+			wid: '100%',
+			d: 'n'
 		},
 		'.item-selector': {
 			bdt: '2px solid #8BD349',
@@ -16,64 +17,101 @@ var Item = absurd.component('Item', {
 		'.prop': {
 			pad: '0 0 0 0.5em'
 		},
+		'.inherited': {
+			d: 'n',
+			bg: '#DCF2C8',
+			mar: '0.2em 0.7em 0 0.7em',
+			pad: '0.4em'
+		},
 		'.prop-name': {
 			color: '#F00'
 		},
 		'.prop-name-inherited': {
-			pad: '0 0 0 1.6em'
+			pad: '0 0 0 0.4em',
+			'.prop-name': {
+				color: '#A40004'
+			}
 		},
 		'.prop-value-nonactive': {
 			ted: 'line-through'
 		},
-		'.parent': {
-			pad: '0 0 0 0.5em'
+		'.toggle-inheritance': {
+			d: 'n',
+			'&:checked + .inherited': {
+				d: 'b'
+			}
+		},
+		label: {
+			fz: '0.9em',
+			cursor: 'pointer'
 		}
 	},
 	html: {
 		'.item': {
 			'.item-selector': '<% getSelector() %>',
 			'.item-styles': [
-				'<% for(var prop in allStyles) { %>',
-					{ '.prop': '<span class="prop-name"><% prop %>: </span> <span class="prop-value"><% allStyles[prop] %>;</span>' },
-				'<% } %>',
-				'<% for(var i=styles.length-2; i>=0; i--) { %>',
-					'<% if(i < styles.length-1) { %>',
-						{ '.parent': '<i class="fa fa-arrow-circle-right"></i>&nbsp;<% styles[i].selector %>' },
-					'<% } %>',
-					'<% for(var prop in styles[i].properties) { %>',
-						'<% if(styles[i].properties[prop].status !== "active") { %>',
-						{ '.prop-name-inherited.prop-value-nonactive': '<span class="prop-name"><% prop %>: </span> <span class="prop-value"><% styles[i].properties[prop].value %>;</span>' },
-						'<% } else { %>',
-						{ '.prop-name-inherited': '<span class="prop-name"><% prop %>: </span> <span class="prop-value"><% styles[i].properties[prop].value %>;</span>' },
-						'<% } %>',
+				'<% for(var prop in styles) { var propid = getPropID(); %>',
+					{ '.prop': [
+						'<span class="prop-name"><% prop %>: </span> <span class="prop-value"><% styles[prop].value %>;</span>',
+						'<% if(styles[prop].inheritance.length > 1) { %>',
+							{ 'label[for="<% propid %>"]': '&nbsp;&nbsp;<i class="fa fa-database"></i>'},
+						'<% } %>'
+					]}, 
+					{ 'input.toggle-inheritance#<% propid %>[type="checkbox"]': '' },
+					'<% if(styles[prop].inheritance.length > 1) { %>',
+						{ '.inherited': 
+							[
+							'<% for(var i=styles[prop].inheritance.length-1; i >= 0; i--) { var parent = styles[prop].inheritance[i]; %>',
+								{ '.parent': '<% parent.selector %>' },
+								'<% if(parent.status !== "active") { %>',
+									{ '.prop-name-inherited.prop-value-nonactive': '<span class="prop-name">&#8627; <% prop %>: </span> <span class="prop-value"><% parent.value %>;</span>' },
+									'<% } else { %>',
+									{ '.prop-name-inherited': '<span class="prop-name">&#8627; <% prop %>: </span> <span class="prop-value"><% parent.value %>;</span>' },
+									'<% } %>',
+							'<% } %>',
+							] 
+						},
 					'<% } %>',
 				'<% } %>'
 			]
 		}
 	},
 	getSelector: function() {
-		if(this.styles.length > 0) {
-			return this.styles[this.styles.length-1].selector;
+		if(this.rawStyles.length > 0) {
+			return this.rawStyles[this.rawStyles.length-1].selector;
 		} else {
 			return '';
 		}
 		return this;
 	},
-	fetchAllStyles: function() {
-		this.allStyles = {};
-		for(var i=0; i<this.styles.length; i++) {
-			for(var prop in this.styles[i].properties) {
-				if(this.styles[i].properties[prop].status === 'active') {
-					this.allStyles[prop] = this.styles[i].properties[prop].value;
+	getPropID: function() {
+		return 'prop' + Math.floor((Math.random() * 100000000) + 1);
+	},
+	formatStyles: function(raw) {
+		var i, s, styles = {};
+		for(i=0; i<raw.length; i++) {
+			for(var prop in raw[i].properties) {
+				if(!styles[prop]) styles[prop] = { value: '', inheritance: [] };
+				s = styles[prop];
+				if(raw[i].properties[prop].status === 'active') {
+					s.value = raw[i].properties[prop].value;
 				}
+				s.inheritance.push({ 
+					selector: raw[i].selector, 
+					value: raw[i].properties[prop].value,
+					status: raw[i].properties[prop].status
+				});
 			}
 		}
+		this.styles = styles;
 		return this;
 	},
-	show: function(styles) {
-		console.log(styles);
-		this.styles = styles;
-		this.fetchAllStyles().populate();
+	setStyles: function(styles) {
+		this.rawStyles = styles;
+		this.formatStyles(styles).populate();
+		return this;
+	},
+	show: function() {
 		this.el.style.display = 'block';
 		return this;
 	},
